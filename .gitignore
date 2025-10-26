@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+package-lock.json
+
+# Testing
+coverage
+
+# Production
+build
+dist
+
+# Vite
+.vite
+*.local
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+.cursor
+
+# OS
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Documentation we don't need in repo
+DESIGN_UPDATE.md
+CAMERA_IMPLEMENTATION_COMPLETE.md
+FIGMA_DESIGN_ADAPTED.md
+ACTUAL_FIGMA_DESIGN_LIVE.md
+COMPLETE_FIGMA_DESIGN_LIVE.md
+IMPORT_ISSUES_FIXED.md
+SUCCESS_FRESH_START.md
+MOBILE_FIRST_UPDATE.md
+FULLY_OPERATIONAL.md
+DESIGN_INTEGRATION_COMPLETE.md
+SETUP_STATUS.md
+
