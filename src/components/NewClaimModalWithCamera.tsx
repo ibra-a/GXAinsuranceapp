@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -21,6 +22,7 @@ import {
 } from '../lib/photoValidation';
 
 interface NewClaimModalProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -38,7 +40,8 @@ interface FormData {
   accident_description: string;
 }
 
-export function NewClaimModalWithCamera({ onClose }: NewClaimModalProps) {
+export function NewClaimModalWithCamera({ isOpen, onClose }: NewClaimModalProps) {
+  const navigate = useNavigate();
   const [step, setStep] = useState<FormStep>('info');
   const [formData, setFormData] = useState<FormData>({
     user_name: '',
@@ -169,12 +172,12 @@ export function NewClaimModalWithCamera({ onClose }: NewClaimModalProps) {
       const result = await createClaim(claimData);
 
       if (result) {
-        toast.success(`Claim ${claimNumber} submitted successfully!`, {
-          description: 'You will receive an email confirmation shortly.'
+        toast.success(`Réclamation ${claimNumber} soumise avec succès!`, {
+          description: 'Vous recevrez une confirmation par email sous peu.'
         });
         setTimeout(() => {
-          window.location.reload(); // Refresh to show new claim
-        }, 2000);
+          navigate('/claim-success', { state: { claimNumber } });
+        }, 1500);
       } else {
         toast.error('Failed to submit claim. Please try again.');
       }
@@ -192,7 +195,7 @@ export function NewClaimModalWithCamera({ onClose }: NewClaimModalProps) {
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto p-0 gap-0" aria-describedby={undefined}>
         <DialogHeader className="sr-only">
           <DialogTitle>File New Claim</DialogTitle>
