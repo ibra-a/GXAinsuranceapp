@@ -172,19 +172,9 @@ export function PhotoCaptureStep({
   const instructions = getAngleInstructions(angle);
 
   return (
-    <Card className="p-6 space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-          📸 Capture {formatAngleName(angle)} View
-        </h3>
-        <p className="text-gray-600">
-          Photo {['front', 'rear', 'left', 'right'].indexOf(angle) + 1} of 4 required
-        </p>
-      </div>
-
-      {/* Camera view or captured photo */}
-      <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black">
+      {/* Camera view fills entire viewport - Native camera app style */}
+      <div className="relative w-full h-full">
         {!captured ? (
           <>
             {cameraError ? (
@@ -205,13 +195,39 @@ export function PhotoCaptureStep({
               />
             )}
             
-            {/* Camera overlay guide */}
+            {/* Top overlay - Header & Instructions */}
             {!cameraError && (
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-4 border-2 border-white/50 border-dashed rounded-lg" />
-                <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm">
-                  Position vehicle {angle} in frame
+              <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 via-black/50 to-transparent pt-safe">
+                <div className="p-4 space-y-3">
+                  {/* Header */}
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-white mb-1">
+                      📸 {formatAngleName(angle)} View
+                    </h3>
+                    <p className="text-xs text-white/80">
+                      Photo {['front', 'rear', 'left', 'right'].indexOf(angle) + 1} of 4
+                    </p>
+                  </div>
+                  
+                  {/* Compact Instructions */}
+                  <div className="bg-blue-500/20 backdrop-blur-sm border border-white/20 rounded-lg p-2">
+                    <ul className="space-y-1 text-xs text-white">
+                      {instructions.map((instruction, index) => (
+                        <li key={index} className="flex items-start gap-1.5">
+                          <span className="font-bold text-blue-300 mt-0.5">{index + 1}.</span>
+                          <span className="leading-tight">{instruction}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
+              </div>
+            )}
+            
+            {/* Camera guide frame overlay */}
+            {!cameraError && (
+              <div className="absolute inset-0 pointer-events-none z-10">
+                <div className="absolute inset-8 border-2 border-white/50 border-dashed rounded-lg" />
               </div>
             )}
           </>
@@ -222,80 +238,62 @@ export function PhotoCaptureStep({
               alt={`${formatAngleName(angle)} view`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 right-4">
-              <CheckCircle className="h-12 w-12 text-green-500 bg-white rounded-full" />
+            <div className="absolute top-8 right-8">
+              <CheckCircle className="h-16 w-16 text-green-500 bg-white rounded-full shadow-lg" />
             </div>
           </div>
         )}
-      </div>
 
-      {/* Instructions */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-          <Camera className="h-5 w-5" />
-          Instructions:
-        </h4>
-        <ul className="space-y-1 text-sm text-blue-800">
-          {instructions.map((instruction, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <span className="text-blue-500 mt-0.5">•</span>
-              <span>{instruction}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex gap-4">
-        {!captured ? (
-          <>
-            <Button
-              onClick={capturePhoto}
-              disabled={uploading || !!cameraError}
-              size="lg"
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-            >
-              {uploading ? (
+        {/* Bottom controls - Fixed at bottom like native camera */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/70 to-transparent pb-safe">
+          {!captured ? (
+            <div className="flex flex-col items-center py-8 px-4 space-y-4">
+              {/* Main capture button */}
+              {!cameraError && (
                 <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Camera className="h-5 w-5 mr-2" />
-                  Capture Photo
+                  <button
+                    onClick={capturePhoto}
+                    disabled={uploading}
+                    className="w-20 h-20 rounded-full bg-white border-4 border-blue-500 shadow-2xl hover:scale-110 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    aria-label="Take photo"
+                  >
+                    {uploading ? (
+                      <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-blue-600" />
+                    )}
+                  </button>
+                  
+                  <p className="text-xs text-white/80 text-center">
+                    Tap to capture
+                  </p>
                 </>
               )}
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              onClick={handleRetake}
-              variant="outline"
-              size="lg"
-              className="flex-1"
-            >
-              <RotateCcw className="h-5 w-5 mr-2" />
-              Retake
-            </Button>
-            <Button
-              onClick={() => onCapture(captured)}
-              size="lg"
-              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-            >
-              <CheckCircle className="h-5 w-5 mr-2" />
-              Continue
-            </Button>
-          </>
-        )}
+            </div>
+          ) : (
+            <div className="flex gap-3 p-4">
+              <Button
+                onClick={handleRetake}
+                variant="outline"
+                size="lg"
+                className="flex-1 h-14 text-base bg-white/90 hover:bg-white"
+              >
+                <RotateCcw className="h-5 w-5 mr-2" />
+                Retake
+              </Button>
+              <Button
+                onClick={() => onCapture(captured)}
+                size="lg"
+                className="flex-1 h-14 text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              >
+                <CheckCircle className="h-5 w-5 mr-2" />
+                Continue
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Help text */}
-      <p className="text-xs text-gray-500 text-center">
-        💡 Tip: Hold your phone horizontally for best results
-      </p>
-    </Card>
+    </div>
   );
 }
 

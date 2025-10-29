@@ -38,3 +38,4 @@ FOR DELETE
 TO public
 USING (bucket_id = 'claim-photos');
 
+
